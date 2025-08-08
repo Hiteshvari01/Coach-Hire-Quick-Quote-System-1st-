@@ -1,0 +1,96 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1st page</title>
+  <link rel="stylesheet" href="/css/1style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lato:wght@700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="main-container">
+    <img src="assets/bg-bus.png" alt="Road Background" />
+
+    <div class="gradient-box">
+      <div class="middle-container">
+        <!-- Left Side -->
+        <div class="left-side">
+          <img src="/assets/image 1.png" alt="Coach Hire Company" />
+          <div class="left-text-container">
+            <h1 class="left-title">Coach Hire Company<br />West Cork</h1>
+            <p class="left-description">
+              Based in Skibbereen, Dave Long Coach Travel is West <br> Cork’s leading Coach & Mini Bus hire company. We pride  <br>ourselves on offering a wide range of coach and mini  <br> bus sizes to suit any group size or budget.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="right-side">
+          <h2 class="right-header">Need A Quick Price Quote for Bus Hire in West Cork?</h2>
+
+          <!-- Step Indicator -->
+          <div class="d-flex align-items-center justify-content-center flex-wrap">
+            <div class="step-circle active-step">1</div>
+            <div class="step-line-container"><div class="step-line"></div></div>
+            <div class="step-circle inactive-step">2</div>
+            <div class="step-line-container"><div class="step-line"></div></div>
+            <div class="step-circle inactive-step">3</div>
+            <div class="step-line-container"><div class="step-line"></div></div>
+            <div class="step-circle inactive-step">4</div>
+          </div>
+
+          <!-- Form -->
+          <form class="form-wrapper needs-validation" novalidate action="/api/trip/start" method="POST">
+           <input type="hidden" name="tripType" id="tripTypeInput" value="return" />
+
+           
+           
+            <label class="aboutTrip">About your trip</label>
+            <div class="trip-buttons mb-3">
+              <button type="button" class="btn btn-outline-secondary trip-type-btn" data-type="one-way">
+                <i class="fa-solid fa-arrow-right"></i> One way trip
+              </button>
+              <button type="button" class="btn btn-primary trip-type-btn" data-type="return">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i> Return trip
+              </button>
+            </div>
+
+           
+
+            <label for="pickup">Pick-up location</label>
+            <input type="text" name="pickupLocation" id="pickup" placeholder="Start typing an address or Eircode" required />
+
+            <label for="destination">Destination location</label>
+            <input type="text"name="destinationLocation" id="destination" placeholder="Start typing an address or Eircode" required />
+
+            <label for="travelers">How many people will be traveling?</label><br>
+            <div class="input-with-icons ">
+            <button type="button" class="btn-icon" id="minusBtn">−</button>
+          <input 
+             type="text"
+               name="numberOfPeople" 
+                id="travelers" 
+                  value="1" 
+                  class="form-control"
+                 required
+                     />
+               <button type="button" class="btn-icon" id="plusBtn">+</button>
+         </div>
+            <hr />
+
+            <button type="submit" class="btn-continue">Continue</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="section-title">What We Do</h1>
+  </div>
+
+  <!-- JS to toggle trip type buttons -->
+  <script src="/js/1index.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trip Review</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f5f7fa; 
+      color: #333;
+      padding: 30px 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+      padding: 30px 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h1 {
+      text-align: center;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 35px;
+      color: #222;
+    }
+    h2 {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #444;
+    }
+    p, li {
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    ul {
+      padding-left: 20px;
+      margin: 0 0 20px 0;
+    }
+    .print-btn {
+      display: block;
+      margin: 30px auto 0 auto;
+      padding: 12px 25px;
+      font-size: 1rem;
+      background: #555;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+    }
+    .print-btn:hover {
+      background: #333;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        color: black;
+      }
+      .container {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+      }
+      .print-btn {
+        display: none;
+      }
+      h2 {
+        border-bottom: none;
+        margin-top: 20px;
+        margin-bottom: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Trip Summary</h1>
+
+    <section>
+      <h2>Trip Details</h2>
+      <p><strong>Type:</strong> <%= trip.tripType %></p>
+      <p><strong>Pickup Location:</strong> <%= trip.pickupLocation %></p>
+      <p><strong>Destination:</strong> <%= trip.destinationLocation %></p>
+      <p><strong>Number of People:</strong> <%= trip.numberOfPeople %></p>
+    </section>
+
+    <section>
+    <h2>Going Stops</h2>
+<% if (goingStops.length > 0) { %>
+  <ul>
+    <% goingStops.forEach(stop => { %>
+      <li><%= stop.location %> - <%= stop.duration %> mins</li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p>No extra stops added.</p>
+<% } %>
+ <% if (trip.tripType === 'return') { %>
+   <h2>Return Stops</h2>
+   <% if (returnStops.length > 0) { %>
+ 
+  <ul>
+    <% returnStops.forEach(stop => { %>
+      <li><%= stop.location %> - <%= stop.duration %> mins</li>
+    <% }) %>
+  </ul>
+    <% } else { %>
+
+    <% } %>
+  <p>No extra stops added.</p>
+<% } %>
+
+    </section>
+
+    <section>
+      <h2>Trip Timing</h2>
+      <p><strong>Departure:</strong> <%= timing.departureDate %> at <%= timing.departureTime %></p>
+       
+       <p><strong>Return:</strong> <%= timing.returnDate %> at <%= timing.returnTime %></p>
+
+    </section>
+
+    <section>
+      <h2>User Details</h2>
+      <p><strong>Name:</strong> <%= user.fullName %></p>
+      <p><strong>Phone Number:</strong> <%= user.phoneNumber %></p>
+      <p><strong>Email:</strong> <%= user.email %></p>
+      <p><strong>Additional Info:</strong> <%= user.additionalInfo || 'N/A' %></p>
+      <p><strong>Confirmed Details:</strong> <%= user.confirmedDetails ? "Yes" : "No" %></p>
+      <p><strong>Privacy Policy Agreed:</strong> <%= user.agreedToPrivacyPolicy ? "Yes" : "No" %></p>
+    </section>
+
+    <button class="print-btn" onclick="window.print()">Print This Page</button>
+  </div>
+</body>
+</html>
