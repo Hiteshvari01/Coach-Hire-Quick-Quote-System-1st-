@@ -179,7 +179,7 @@ Thank you for choosing us! 🙏
     const user = await UserDetails.findOne({ tripId }).lean();
 
     // Pass all data to the reviewPage template
-    res.render("reviewPage", { trip, goingStops, returnStops, timing, user });
+    res.render("reviewpage", { trip, goingStops, returnStops, timing, user });
 
   } catch (err) {
     console.error("Error saving user details or fetching data:", err);
