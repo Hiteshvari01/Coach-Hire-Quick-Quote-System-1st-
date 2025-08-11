@@ -158,7 +158,7 @@ Your booking request has been received successfully. Here are your booking detai
 *Status:* _Pending Confirmation_
 
 Please reply with *CONFIRM* to finalize your booking.
-
+https://sigh-up-with-coach-hire-quick-quote.onrender.com
 Thank you for choosing us! 🙏
 `,
         from: 'whatsapp:+14155238886',
