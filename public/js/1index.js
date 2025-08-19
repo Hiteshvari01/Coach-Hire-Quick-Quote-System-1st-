@@ -1,5 +1,5 @@
-
-  const form = document.querySelector('.form-wrapper');
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form.needs-validation');
   const pickup = document.getElementById('pickup');
   const destination = document.getElementById('destination');
   const travelersInput = document.getElementById('travelers');
@@ -8,7 +8,7 @@
   const tripButtons = document.querySelectorAll('.trip-type-btn');
   const tripTypeInput = document.getElementById('tripTypeInput');
 
-  // ✅ Plus and Minus Button Functionality
+  // Plus and Minus Button Functionality
   minusBtn.addEventListener('click', () => {
     let currentValue = parseInt(travelersInput.value) || 1;
     if (currentValue > 1) {
@@ -23,7 +23,7 @@
     }
   });
 
-  // ✅ Trip type selection logic
+  // Trip type selection logic
   tripButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
       tripButtons.forEach((b) => {
@@ -38,24 +38,17 @@
     });
   });
 
- 
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-(function () {
-  'use strict'
+  // Bootstrap custom validation for forms
+  var forms = document.querySelectorAll('.needs-validation');
 
-  // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
-  // Loop over them and prevent submission
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
-        }
-
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
+      form.classList.add('was-validated');
+    }, false);
+  });
+});

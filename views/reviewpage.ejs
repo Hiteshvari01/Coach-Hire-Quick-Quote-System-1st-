@@ -4,147 +4,86 @@
   <meta charset="UTF-8" />
   <title>Trip Review</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f5f7fa; 
-      color: #333;
-      padding: 30px 20px;
-      margin: 0;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      border-radius: 10px;
-      padding: 30px 40px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    h1 {
-      text-align: center;
-      font-weight: 700;
-      font-size: 2rem;
-      margin-bottom: 35px;
-      color: #222;
-    }
-    h2 {
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 6px;
-      margin-bottom: 20px;
-      font-weight: 600;
-      color: #444;
-    }
-    p, li {
-      font-size: 1rem;
-      line-height: 1.5;
-      margin-bottom: 10px;
-      color: #555;
-    }
-    ul {
-      padding-left: 20px;
-      margin: 0 0 20px 0;
-    }
-    .print-btn {
-      display: block;
-      margin: 30px auto 0 auto;
-      padding: 12px 25px;
-      font-size: 1rem;
-      background: #555;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-    }
-    .print-btn:hover {
-      background: #333;
-    }
-    @media print {
-      body {
-        background: white;
-        padding: 0;
-        color: black;
-      }
-      .container {
-        box-shadow: none;
-        border-radius: 0;
-        padding: 0;
-        margin: 0;
-      }
-      .print-btn {
-        display: none;
-      }
-      h2 {
-        border-bottom: none;
-        margin-top: 20px;
-        margin-bottom: 8px;
-      }
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Trip Summary</h1>
+<body class="bg-gray-100 text-gray-800">
 
-    <section>
-      <h2>Trip Details</h2>
-      <p><strong>Type:</strong> <%= trip.tripType %></p>
-      <p><strong>Pickup Location:</strong> <%= trip.pickupLocation %></p>
-      <p><strong>Destination:</strong> <%= trip.destinationLocation %></p>
-      <p><strong>Number of People:</strong> <%= trip.numberOfPeople %></p>
-    </section>
+  <div class="max-w-4xl mx-auto p-6 sm:p-10">
+    <div class="bg-white rounded-2xl shadow-lg p-8 sm:p-12">
+      <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-10">Trip Summary</h1>
 
-    <section>
-    <h2>Going Stops</h2>
-<% if (goingStops.length > 0) { %>
-  <ul>
-    <% goingStops.forEach(stop => { %>
-      <li><%= stop.location %> - <%= stop.duration %> mins</li>
-    <% }) %>
-  </ul>
-<% } else { %>
-  <p>No extra stops added.</p>
-<% } %>
- <% if (trip.tripType === 'return') { %>
-   <h2>Return Stops</h2>
-   <% if (returnStops.length > 0) { %>
- 
-  <ul>
-    <% returnStops.forEach(stop => { %>
-      <li><%= stop.location %> - <%= stop.duration %> mins</li>
-    <% }) %>
-  </ul>
-    <% } else { %>
+      <!-- Trip Details -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4">Trip Details</h2>
+        <div class="space-y-2 text-gray-700">
+          <p><strong>Type:</strong> <%= trip.tripType %></p>
+          <p><strong>Pickup Location:</strong> <%= trip.pickupLocation %></p>
+          <p><strong>Destination:</strong> <%= trip.destinationLocation %></p>
+          <p><strong>Number of People:</strong> <%= trip.numberOfPeople %></p>
+        </div>
+      </section>
 
-    <% } %>
-  <p>No extra stops added.</p>
-<% } %>
+      <!-- Going Stops -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4">Going Stops</h2>
+        <% if (goingStops.length > 0) { %>
+          <ul class="list-disc list-inside space-y-2 text-gray-700">
+            <% goingStops.forEach(stop => { %>
+              <li><span class="font-medium text-gray-900"><%= stop.location %></span> - <%= stop.duration %> mins</li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="text-gray-500">No extra stops added.</p>
+        <% } %>
 
-    </section>
+        <% if (trip.tripType === 'return') { %>
+          <h2 class="text-2xl font-semibold text-gray-800 border-b-2 border-gray-200 pb-2 mt-8 mb-4">Return Stops</h2>
+          <% if (returnStops.length > 0) { %>
+            <ul class="list-disc list-inside space-y-2 text-gray-700">
+              <% returnStops.forEach(stop => { %>
+                <li><span class="font-medium text-gray-900"><%= stop.location %></span> - <%= stop.duration %> mins</li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="text-gray-500">No extra stops added.</p>
+          <% } %>
+        <% } %>
+      </section>
 
-    <section>
-      <h2>Trip Timing</h2>
-      <p><strong>Departure:</strong> <%= timing.departureDate %> at <%= timing.departureTime %></p>
-       
-       <p><strong>Return:</strong> <%= timing.returnDate %> at <%= timing.returnTime %></p>
+      <!-- Trip Timing -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4">Trip Timing</h2>
+        <div class="space-y-2 text-gray-700">
+          <p><strong>Departure:</strong> <%= timing.departureDate %> at <%= timing.departureTime %></p>
+          <% if (trip.tripType === 'return') { %>
+            <p><strong>Return:</strong> <%= timing.returnDate %> at <%= timing.returnTime %></p>
+          <% } %>
+        </div>
+      </section>
 
-    </section>
+      <!-- User Details -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4">User Details</h2>
+        <div class="space-y-2 text-gray-700">
+          <p><strong>Name:</strong> <%= user.fullName %></p>
+          <p><strong>Phone Number:</strong> <%= user.phoneNumber %></p>
+          <p><strong>Email:</strong> <%= user.email %></p>
+          <p><strong>Additional Info:</strong> <%= user.additionalInfo || 'N/A' %></p>
+          <p><strong>Confirmed Details:</strong> <%= user.confirmedDetails ? "Yes" : "No" %></p>
+          <p><strong>Privacy Policy Agreed:</strong> <%= user.agreedToPrivacyPolicy ? "Yes" : "No" %></p>
+        </div>
+      </section>
 
-    <section>
-      <h2>User Details</h2>
-      <p><strong>Name:</strong> <%= user.fullName %></p>
-      <p><strong>Phone Number:</strong> <%= user.phoneNumber %></p>
-      <p><strong>Email:</strong> <%= user.email %></p>
-      <p><strong>Additional Info:</strong> <%= user.additionalInfo || 'N/A' %></p>
-      <p><strong>Confirmed Details:</strong> <%= user.confirmedDetails ? "Yes" : "No" %></p>
-      <p><strong>Privacy Policy Agreed:</strong> <%= user.agreedToPrivacyPolicy ? "Yes" : "No" %></p>
-    </section>
-
-    <button class="print-btn" onclick="window.print()">Print This Page</button>
-    <a href="/" class="btn btn-primary" style="display:block; margin:20px auto; text-align:center;">
-  Back to First Page
-</a>
-
+      <!-- Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+        <button onclick="window.print()" class="px-6 py-3 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-900 transition">
+          Print This Page
+        </button>
+        <a href="/" class="px-6 py-3 text-gray-800 border border-gray-800 rounded-lg font-semibold text-center hover:bg-gray-100 transition">
+          Back to First Page
+        </a>
+      </div>
+    </div>
   </div>
 </body>
 </html>

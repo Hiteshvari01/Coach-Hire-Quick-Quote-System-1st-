@@ -1,41 +1,60 @@
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('form');
-  const returnFields = document.querySelectorAll('[name="returnDate"], [name="returnTime"]');
-  const tripType = document.getElementById('tripType')?.value;
+  const returnRow = document.querySelector('.return-row');
+  const returnInputs = returnRow ? returnRow.querySelectorAll('input') : [];
+  const tripTypeInput = document.querySelector('input[name="tripType"]');
 
-  // 🔍 Debug
-  console.log("Trip Type:", tripType);
-
-  // ✅ Hide return fields if one-way
-  if (tripType === 'one-way') {
-    returnFields.forEach(field => {
-      field.closest('.row').style.display = 'none';
-      field.removeAttribute('required');
-    });
+  if (!form || !tripTypeInput) {
+    console.error("Required elements not found!");
+    return;
   }
 
-  // ✅ Form submission validation
+  // Function to show/hide return row
+  function toggleReturnRow() {
+    if (tripTypeInput.value.trim() === 'return') {
+      if (returnRow) returnRow.classList.remove('d-none');
+      returnInputs.forEach(input => input.setAttribute('required', 'true'));
+    } else {
+      if (returnRow) returnRow.classList.add('d-none');
+      returnInputs.forEach(input => input.removeAttribute('required'));
+    }
+  }
+
+  // Initial toggle on page load
+  toggleReturnRow();
+
+  // Optional: If tripType can change dynamically, listen for changes
+  tripTypeInput.addEventListener('change', toggleReturnRow);
+
+  // Form validation
   form.addEventListener('submit', function (e) {
-    const departureDate = this.departureDate.value;
-    const departureTime = this.departureTime.value;
-    const returnDate = this.returnDate?.value;
-    const returnTime = this.returnTime?.value;
+    const departureDateInput = this.departureDate;
+    const returnDateInput = this.returnDate;
 
     const today = new Date();
-    const depDateObj = new Date(departureDate);
-    const retDateObj = returnDate ? new Date(returnDate) : null;
-
     today.setHours(0, 0, 0, 0);
-    depDateObj.setHours(0, 0, 0, 0);
-    if (retDateObj) retDateObj.setHours(0, 0, 0, 0);
 
-    if (depDateObj < today) {
-      alert("Departure date cannot be in the past.");
-      e.preventDefault();
-      return;
+    const depDate = new Date(departureDateInput.value);
+    depDate.setHours(0, 0, 0, 0);
+
+    let retDate = null;
+    if (returnDateInput && returnDateInput.value) {
+      retDate = new Date(returnDateInput.value);
+      retDate.setHours(0, 0, 0, 0);
     }
 
-   
+    departureDateInput.setCustomValidity('');
+    if (returnDateInput) returnDateInput.setCustomValidity('');
+
+    // Departure date cannot be in the past
+    if (depDate < today) {
+      departureDateInput.setCustomValidity('Departure date cannot be in the past');
+    }
+
+    // Return date must be after departure date
+    if (retDate && retDate < depDate) {
+      returnDateInput.setCustomValidity('Return date must be after departure date');
+    }
 
     if (!form.checkValidity()) {
       e.preventDefault();
@@ -43,17 +62,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     form.classList.add('was-validated');
-  });
-
-  // Bootstrap validation styling
-  const forms = document.querySelectorAll('.needs-validation');
-  Array.prototype.slice.call(forms).forEach(function (form) {
-    form.addEventListener('submit', function (event) {
-      if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      form.classList.add('was-validated');
-    }, false);
   });
 });

@@ -16,37 +16,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const extraStopChoiceInput = document.getElementById("extraStopChoice");
   let stopChoice = "no"; // default: assume No is selected at start
 
-  // Initial state
-  formSubsection.style.display = "none";
+  // Initial state 
+formSubsection.style.display = "none";
+btnNo.classList.add("active");
+btnNo.classList.remove("inactive");
+btnYes.classList.remove("active");
+btnYes.classList.add("inactive");
+btnGroup.style.marginBottom = "10rem";  // No button active
+extraStopChoiceInput.value = "no";
+
+// Handling Yes/No buttons
+btnYes.addEventListener("click", () => {
+  stopChoice = "yes";
+  extraStopChoiceInput.value = "yes";
+  btnYes.classList.add("active");
+  btnYes.classList.remove("inactive");
+  btnNo.classList.remove("active");
+  btnNo.classList.add("inactive");
+  formSubsection.style.display = "block";
+  btnGroup.style.marginBottom = "0";  // No bottom margin for Yes
+});
+
+btnNo.addEventListener("click", () => {
+  stopChoice = "no";
+  extraStopChoiceInput.value = "no";
   btnNo.classList.add("active");
   btnNo.classList.remove("inactive");
   btnYes.classList.remove("active");
   btnYes.classList.add("inactive");
-  btnGroup.style.marginBottom = "10rem";
-  extraStopChoiceInput.value = "no";
-
-  // Handling Yes/No buttons
-  btnYes.addEventListener("click", () => {
-    stopChoice = "yes";
-    extraStopChoiceInput.value = "yes";
-    btnYes.classList.add("active");
-    btnYes.classList.remove("inactive");
-    btnNo.classList.remove("active");
-    btnNo.classList.add("inactive");
-    formSubsection.style.display = "block";
-    btnGroup.style.marginBottom = "1rem";
-  });
-
-  btnNo.addEventListener("click", () => {
-    stopChoice = "no";
-    extraStopChoiceInput.value = "no";
-    btnNo.classList.add("active");
-    btnNo.classList.remove("inactive");
-    btnYes.classList.remove("active");
-    btnYes.classList.add("inactive");
-    formSubsection.style.display = "none";
-    btnGroup.style.marginBottom = "10rem";
-  });
+  formSubsection.style.display = "none";
+  btnGroup.style.marginBottom = "10rem"; // Bottom margin for No
+});
 
   // Add Going Stop
   addStopBtn.addEventListener("click", function () {
@@ -54,23 +54,47 @@ document.addEventListener("DOMContentLoaded", () => {
     newRow.classList.add("row", "g-2", "mb-1", "align-items-end");
     newRow.innerHTML = `
       <input type="hidden" name="stopType[]" value="going" />
-      <div class="col-12 col-md-8">
-        <div class="input-icon-wrapper mb-3">
-          <input type="text" name="location[]" class="form-control with-icon" placeholder="Start typing an address or Eircode..." required oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
-          <i class="bi bi-geo-alt-fill text-primary icon-inside open-map" style="cursor: pointer;"></i>
-        </div>
+       <div class="flex items-start gap-2 stop-row w-full flex-nowrap">
+    <!-- Stop Location -->
+    <div class="flex-1 min-w-0">
+      
+      <div class="relative w-full">
+        <input
+          type="text"
+          name="location[]"
+          placeholder="Start typing an address or Eircode..."
+          class=" form-control w-full rounded-lg border border-gray-300 py-2.5 px-2 text-xs pr-8 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gradient-to-b from-gray-100 to-white placeholder-transparent md:placeholder:text-xs"
+          required
+        />
+        <i class="bi bi-geo-alt-fill absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 cursor-pointer text-xs"></i>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="input-icon-wrapper mb-3">
-          <input type="number" name="duration[]" class="form-control with-icon" required />
-          <i class="bi bi-clock-fill text-primary icon-inside"></i>
+    </div>
+
+    <!-- Duration + Remove Button in same column -->
+    <div class="flex flex-col w-28 flex-shrink-0">
+      
+      <div class="flex items-center gap-1">
+        <div class="relative flex-1">
+          <input
+            type="text"
+            name="duration[]"
+            placeholder="Min"
+            class=" form-control w-full rounded-lg border border-gray-300 py-2.5 px-2 pr-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-transparent md:placeholder:text-xs bg-gradient-to-b from-gray-100 to-white"
+            oninput="this.value = this.value.replace(/[^0-9]/g,'')"
+            required
+          />
+          <i class="bi bi-clock-fill absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 text-xs"></i>
         </div>
-      </div>
-      <div class="col-1 col-md-1">
-        <div class="form-control only-icon remove-stop-btn rounded-circle" style="cursor: pointer;">
+
+        <!-- Remove button outside input but in same column -->
+        <button type="button" class="w-5 h-5 flex-shrink-0 flex items-center justify-center bg-gray-300 rounded-full hover:bg-red-500 hover:text-white remove-stop-btn text-xs">
           <i class="fa fa-times"></i>
-        </div>
+        </button>
       </div>
+    </div>
+  </div>
+
+</div>
     `;
     extraStopContainer.appendChild(newRow);
 
@@ -89,28 +113,45 @@ document.addEventListener("DOMContentLoaded", () => {
         const locationInput = row.querySelector('input[name="location[]"]');
         const durationInput = row.querySelector('input[name="duration[]"]');
 
-        const returnRow = document.createElement("div");
-        returnRow.classList.add("row", "g-2", "mb-1", "align-items-end");
-        returnRow.innerHTML = `
-          <input type="hidden" name="stopType[]" value="return" />
-          <div class="col-12 col-md-8">
-            <div class="input-icon-wrapper mb-3">
-              <input type="text" name="location[]" class="form-control with-icon" value="${locationInput.value}" placeholder="Start typing an address or Eircode..." required oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
-              <i class="bi bi-geo-alt-fill text-primary icon-inside open-map" style="cursor: pointer;"></i>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="input-icon-wrapper mb-3">
-              <input type="number" name="duration[]" class="form-control with-icon" value="${durationInput.value}" required />
-              <i class="bi bi-clock-fill text-primary icon-inside"></i>
-            </div>
-          </div>
-          <div class="col-1 col-md-1">
-            <div class="form-control only-icon remove-stop-btn rounded-circle" style="cursor: pointer;">
-              <i class="fa fa-times"></i>
-            </div>
-          </div>
-        `;
+       const returnRow = document.createElement("div");
+returnRow.classList.add("row", "g-2", "mb-1", "align-items-end");
+returnRow.innerHTML = `
+  <input type="hidden" name="stopType[]" value="return" />
+  <div class="flex items-start gap-2 stop-row w-full flex-nowrap">
+    <div class="flex-1 min-w-0">
+      <div class="relative w-full">
+        <input
+          type="text"
+          value="${locationInput.value}"
+          name="location[]"
+          placeholder="Start typing an address or Eircode..."
+          class="form-control w-full rounded-lg border border-gray-300 py-2.5 px-2 text-xs pr-8 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gradient-to-b from-gray-100 to-white placeholder-transparent md:placeholder:text-xs"
+          required
+        />
+        <i class="bi bi-geo-alt-fill absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 cursor-pointer text-xs"></i>
+      </div>
+    </div>
+    <div class="flex flex-col w-28 flex-shrink-0">
+      <div class="flex items-center gap-1">
+        <div class="relative flex-1">
+          <input
+            type="text"
+            value="${durationInput.value}"
+            name="duration[]"
+            placeholder="Min"
+            class="form-control w-full rounded-lg border border-gray-300 py-2.5 px-2 pr-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-transparent md:placeholder:text-xs bg-gradient-to-b from-gray-100 to-white"
+            oninput="this.value = this.value.replace(/[^0-9]/g,'')"
+            required
+          />
+          <i class="bi bi-clock-fill absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 text-xs"></i>
+        </div>
+        <button type="button" class="w-5 h-5 flex-shrink-0 flex items-center justify-center bg-gray-300 rounded-full hover:bg-red-500 hover:text-white remove-stop-btn text-xs">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+`;
 
         returnStopContainer.appendChild(returnRow);
         const removeBtn = returnRow.querySelector(".remove-stop-btn");
@@ -129,23 +170,46 @@ document.addEventListener("DOMContentLoaded", () => {
     returnRow.classList.add("row", "g-2", "mb-1", "align-items-end");
     returnRow.innerHTML = `
       <input type="hidden" name="stopType[]" value="return" />
-      <div class="col-12 col-md-8">
-        <div class="input-icon-wrapper mb-3">
-          <input type="text" name="location[]" class="form-control with-icon" placeholder="Start typing an address or Eircode..." required />
-          <i class="bi bi-geo-alt-fill text-primary icon-inside open-map" style="cursor: pointer;"></i>
-        </div>
+        <div class=" mb-2 flex items-start gap-2 stop-row w-full flex-nowrap">
+    <!-- Stop Location -->
+    <div class="flex-1 min-w-0">
+      
+      <div class="relative w-full">
+        <input
+          type="text"
+          name="location[]"
+          placeholder="Start typing an address or Eircode..."
+          class=" form-control w-full rounded-lg border border-gray-300 py-2.5 px-2 text-xs pr-8 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gradient-to-b from-gray-100 to-white placeholder-transparent md:placeholder:text-xs"
+          required
+        />
+        <i class="bi bi-geo-alt-fill absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 cursor-pointer text-xs"></i>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="input-icon-wrapper mb-3">
-          <input type="number" name="duration[]" class="form-control with-icon" required />
-          <i class="bi bi-clock-fill text-primary icon-inside"></i>
+    </div>
+
+    <!-- Duration + Remove Button in same column -->
+    <div class="flex flex-col w-28 flex-shrink-0">
+     
+      <div class="flex items-center gap-1">
+        <div class="relative flex-1">
+          <input
+            type="text"
+            name="duration[]"
+            placeholder="Min"
+            class=" form-control w-full rounded-lg border border-gray-300 py-2.5 px-2 pr-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-transparent md:placeholder:text-xs bg-gradient-to-b from-gray-100 to-white"
+            oninput="this.value = this.value.replace(/[^0-9]/g,'')"
+            required
+          />
+          <i class="bi bi-clock-fill absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 text-xs"></i>
         </div>
-      </div>
-      <div class="col-1 col-md-1">
-        <div class="form-control only-icon remove-stop-btn rounded-circle" style="cursor: pointer;">
+
+        <!-- Remove button outside input but in same column -->
+        <button type="button" class="w-5 h-5 flex-shrink-0 flex items-center justify-center bg-gray-300 rounded-full hover:bg-red-500 hover:text-white remove-stop-btn text-xs">
           <i class="fa fa-times"></i>
-        </div>
+        </button>
       </div>
+    </div>
+  </div>
+
     `;
     returnStopContainer.appendChild(returnRow);
 

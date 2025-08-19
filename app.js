@@ -54,47 +54,52 @@ app.post("/api/trip/start", async (req, res) => {
 
 
 });
-app.get('/go-to-next', (req, res) => {
-  const tripType = req.query.tripType;
-  const { tripId} = req.query;
-  res.render("3rdPage", { tripId, tripType }); // ✅ Pass tripType to EJS
-});
-
-
 
 
 app.post('/save-stops', async (req, res) => {
-  const {tripId, location, duration, stopType,tripType = 'one-way'  } = req.body;
+  const { tripId, location, duration, stopType, tripType } = req.body;
 
-  if (!tripId || !location || !duration || !stopType) {
-    return res.status(400).send("Missing trip or stop data");
+  if (!tripId) {
+    return res.status(400).send("Missing tripId");
   }
 
-  const stopsData = [];
-  //Yeh check karta hai ki location ek array hai ya nahi.
-  //Agar location already array hai, to use as it is le lo.
-  //Agar location ek single value hai, to usko ek array mein convert kar do (jaise [location]).
+  // Agar user ne koi extra stop hi add nahi kiya
+  if (!location || location.length === 0) {
+    return res.render("3rdPage", { tripId, tripType });
+  }
+
   const locations = Array.isArray(location) ? location : [location];
   const durations = Array.isArray(duration) ? duration : [duration];
   const stopTypes = Array.isArray(stopType) ? stopType : [stopType];
 
+  const stopsData = [];
+
   for (let i = 0; i < locations.length; i++) {
-    stopsData.push({
-      tripId,
-      location: locations[i],
-      duration: parseInt(durations[i]),
-      stopType: stopTypes[i] || 'going',
-    });
+    // Sirf tab save karo jab user ne stop fill kiya ho
+    if (locations[i] && durations[i]) {
+      stopsData.push({
+        tripId,
+        location: locations[i],
+        duration: parseInt(durations[i]) || 0,
+        stopType: stopTypes[i] || 'going',
+      });
+    }
   }
 
   try {
-    await Stop.insertMany(stopsData);
-    res.render("3rdPage", { tripId , tripType});
+    if (stopsData.length > 0) {
+      await Stop.insertMany(stopsData); // ✅ sirf valid stops save honge
+    }
+    res.render("3rdPage", { tripId, tripType });
+    console.log("Trip Type:", req.body.tripType);
+
+
   } catch (err) {
     console.error("Error inserting stops:", err);
     res.status(500).send(err.message);
   }
 });
+
 
 
 app.post("/save-trip-timing", async (req, res) => {
@@ -177,9 +182,10 @@ Thank you for choosing us! 🙏
     const returnStops = await Stop.find({ tripId, stopType: 'return' }).lean();
     const timing = await tripTiming.findOne({ tripId }).lean();
     const user = await UserDetails.findOne({ tripId }).lean();
-
+    const {tripType } = req.body;
     // Pass all data to the reviewPage template
-    res.render("reviewpage", { trip, goingStops, returnStops, timing, user });
+    res.render("reviewpage", {  tripType, trip, goingStops, returnStops, timing, user });
+    
 
   } catch (err) {
     console.error("Error saving user details or fetching data:", err);

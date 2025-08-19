@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const tripQuoteSchema = new mongoose.Schema({
   tripType: {
     type: String,
-    enum: ['one-way', 'return'], // must match frontend values exactly
+    enum: ['oneway', 'return'], // must match frontend values exactly
     required: true
   },
   pickupLocation: {

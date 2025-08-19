@@ -209,12 +209,11 @@
     .btn-group {
       display: flex;
       gap: 10px; /* 100px gap between yes/no buttons */
-      margin-bottom: 150px;
+      margin-bottom: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
 
-   
 
     .btn-continue {
       max-width: 300px;
