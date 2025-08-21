@@ -90,6 +90,24 @@
     <div class="valid-feedback">Perfect! Email looks fine.</div>
   </div>
 
+   <!--password -->
+  <div class="col-md-12 mb-4">
+    <label for="password" class="block text-sm font-medium text-black-900 mb-1">Password</label>
+    <input
+  class="inputs form-control"
+  type="password"
+  name="password"
+  id="password"
+  placeholder="MyP@ssw0rd2025"
+  required
+  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+/>
+<div class="invalid-feedback">
+  Password must be at least 8 characters, include uppercase, lowercase, number & symbol.
+</div>
+<div class="valid-feedback">Perfect! looks fine.</div>
+  </div>
+
   <!-- Additional Info (Optional) -->
   <div class="col-md-12 mb-4">
     <label for="info" class="block text-sm font-medium text-black-900 mb-1">

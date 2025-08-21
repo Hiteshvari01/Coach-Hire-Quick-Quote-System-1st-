@@ -131,6 +131,7 @@ app.post("/submit-user-details", async (req, res) => {
       fullName,
       phoneNumber,
       email,
+      password,
       additionalInfo,
       confirmedDetails,
       agreedToPrivacyPolicy,
@@ -145,6 +146,7 @@ app.post("/submit-user-details", async (req, res) => {
       phoneNumber,
       email,
       additionalInfo,
+      password,
       confirmedDetails: confirmed,
       agreedToPrivacyPolicy: agreed,
     });
