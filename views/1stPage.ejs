@@ -75,12 +75,14 @@
 
 
             <!-- Pickup -->
-            <label for="pickup" class="font-semibold text-base mt-4 block">Pick-up location</label>
-            <input type="text" name="pickupLocation" id="pickup" placeholder="Start typing an address or Eircode" class="form-control py-2 px-3 rounded-lg border border-gray-300" required />
+<label for="pickup" class="font-semibold text-base mt-4 block">Pick-up location</label>
+<input type="text" name="pickupLocation" id="pickup" placeholder="Start typing an address or Eircode" class="form-control py-2 px-3 rounded-lg border border-gray-300" autocomplete="off" required />
+<ul id="pickup-list" class="border border-gray-300 rounded-lg mt-1 max-h-40 overflow-y-auto hidden bg-white"></ul>
 
-            <!-- Destination -->
-            <label for="destination" class="font-semibold text-base mt-4 block">Destination location</label>
-            <input type="text" name="destinationLocation" id="destination" placeholder="Start typing an address or Eircode" class="form-control py-2 px-3 rounded-lg border border-gray-300" required />
+<!-- Destination -->
+<label for="destination" class="font-semibold text-base mt-4 block">Destination location</label>
+<input type="text" name="destinationLocation" id="destination" placeholder="Start typing an address or Eircode" class="form-control py-2 px-3 rounded-lg border border-gray-300" autocomplete="off" required />
+<ul id="destination-list" class="border border-gray-300 rounded-lg mt-1 max-h-40 overflow-y-auto hidden bg-white"></ul>
 
             <!-- Travelers -->
             <label for="travelers" class="font-semibold text-base mt-4 block">How many people will be traveling?</label>
