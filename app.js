@@ -123,7 +123,8 @@ app.post("/save-trip-timing", async (req, res) => {
   }
 });
 
-const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+const nodemailer = require("nodemailer");
+
 app.post("/sendQuoteRequest", async (req, res) => {
   try {
     const {
@@ -141,7 +142,7 @@ app.post("/sendQuoteRequest", async (req, res) => {
     const confirmed = confirmedDetails === "on";
     const agreed = agreedToPrivacyPolicy === "on";
 
-    // Save user details
+    // ✅ Save user details
     const userDetails = new UserDetails({
       tripId,
       fullName,
@@ -154,48 +155,93 @@ app.post("/sendQuoteRequest", async (req, res) => {
     });
     await userDetails.save();
 
-    // Fetch trip & timing
+    // ✅ Fetch trip & timing
     const trip = await TripQuote.findById(tripId).lean();
     const timing = await tripTiming.findOne({ tripId }).lean();
 
-    // Safety check: trip & timing exist
     if (!trip || !timing) {
       return res.status(400).send("Trip data not found. Please check tripId.");
     }
 
-    // Assign variables from models
     const pickup = trip.pickupLocation;
     const destination = trip.destinationLocation;
     const date = timing.departureDate;
     const time = timing.departureTime;
-    const returnDate = timing.returnDate;
-    const returnTime = timing.returnTime;
-    const userName = fullName;
-    const userPhone = phoneNumber;
+    const returnDate = timing.returnDate || "N/A";
+    const returnTime = timing.returnTime || "N/A";
 
-    // WhatsApp message
-    const messageBody = `📢 New Quote Request Received!
-Pickup: ${pickup} ➡ Destination: ${destination}
-Date & Time: ${date} ${time}
-Return Date & Time: ${returnDate} ${returnTime}
-User: ${userName} (${userPhone})
-Check full details here: https://sigh-up-with-coach-hire-quick-quote.onrender.com`;
-
-    // Send WhatsApp notification
-    try {
-      await client.messages.create({
-        from: 'whatsapp:+14155238886',
-        to: `whatsapp:+916269115002`,    // Admin WhatsApp number
-        body: messageBody
-      });
-      console.log("WhatsApp message sent to admin.");
-    } catch (err) {
-      console.error("Failed to send WhatsApp message:", err);
-    }
-
-    // Fetch stops if needed
+    // ✅ Fetch stops
     const goingStops = await Stop.find({ tripId, stopType: "going" }).lean();
     const returnStops = await Stop.find({ tripId, stopType: "return" }).lean();
+
+    // ✅ Nodemailer setup
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,  // sender email
+        pass: process.env.EMAIL_PASS,  // app password
+      },
+    });
+
+    // ✅ User Email (Detailed + Pending)
+    const userMailOptions = {
+      from: `"Bus Hire Service" <${process.env.EMAIL_USER}>`,
+      to: userDetails.email,
+      subject: "Your Bus Hire Quote Request - Status Pending",
+      html: `
+        <h2>Hi ${userDetails.fullName},</h2>
+        <p>Thank you for submitting your trip details. Your request is currently <b>Status: Pending</b>.</p>
+        <h3>Trip Details:</h3>
+        <p><b>Pickup:</b> ${pickup}</p>
+        <p><b>Destination:</b> ${destination}</p>
+        <p><b>Date & Time:</b> ${date} ${time}</p>
+        <p><b>Return Date & Time:</b> ${returnDate} ${returnTime}</p>
+        <h3>Stops:</h3>
+        <ul>
+          ${goingStops.map(stop => `<li>Going Stop: ${stop.location} (${stop.duration} mins)</li>`).join("")}
+          ${returnStops.map(stop => `<li>Return Stop: ${stop.location} (${stop.duration} mins)</li>`).join("")}
+        </ul>
+        <p><b>Additional Info:</b> ${userDetails.additionalInfo || "N/A"}</p>
+        <p>We will get back to you soon with a quote.</p>
+        <br>
+        <p>Regards,<br>Bus Hire Team</p>
+      `
+    };
+
+    // ✅ Admin Email (Detailed)
+    const adminMailOptions = {
+      from: `"Bus Hire Service" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: "New Quote Request Received",
+      html: `
+        <h2>New Quote Request Received</h2>
+        <h3>User Details:</h3>
+        <p><b>Name:</b> ${userDetails.fullName}</p>
+        <p><b>Phone:</b> ${userDetails.phoneNumber}</p>
+        <p><b>Email:</b> ${userDetails.email}</p>
+        
+        <h3>Trip Details:</h3>
+        <p><b>Pickup:</b> ${pickup}</p>
+        <p><b>Destination:</b> ${destination}</p>
+        <p><b>Date & Time:</b> ${date} ${time}</p>
+        <p><b>Return Date & Time:</b> ${returnDate} ${returnTime}</p>
+        
+        <h3>Stops:</h3>
+        <ul>
+          ${goingStops.map(stop => `<li>Going Stop: ${stop.location} (${stop.duration} mins)</li>`).join("")}
+          ${returnStops.map(stop => `<li>Return Stop: ${stop.location} (${stop.duration} mins)</li>`).join("")}
+        </ul>
+        
+        <p><b>Additional Info:</b> ${userDetails.additionalInfo || "N/A"}</p>
+        <br>
+        <p>Regards,<br>Bus Hire System</p>
+      `
+    };
+
+    // ✅ Send both emails
+    await transporter.sendMail(userMailOptions);
+    await transporter.sendMail(adminMailOptions);
+    console.log("Emails sent to user & admin.");
 
     // Render review page
     res.render("reviewpage", { tripType, trip, goingStops, returnStops, timing, user: userDetails });
