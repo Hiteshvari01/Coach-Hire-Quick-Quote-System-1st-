@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 require('dotenv').config();
 const twilio = require('twilio');
-const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+
 
 const app = express();
 
@@ -123,8 +123,8 @@ app.post("/save-trip-timing", async (req, res) => {
   }
 });
 
-
-app.post("/submit-user-details", async (req, res) => {
+const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+app.post("/sendQuoteRequest", async (req, res) => {
   try {
     const {
       tripId,
@@ -135,11 +135,13 @@ app.post("/submit-user-details", async (req, res) => {
       additionalInfo,
       confirmedDetails,
       agreedToPrivacyPolicy,
+      tripType
     } = req.body;
 
     const confirmed = confirmedDetails === "on";
     const agreed = agreedToPrivacyPolicy === "on";
 
+    // Save user details
     const userDetails = new UserDetails({
       tripId,
       fullName,
@@ -150,51 +152,59 @@ app.post("/submit-user-details", async (req, res) => {
       confirmedDetails: confirmed,
       agreedToPrivacyPolicy: agreed,
     });
-
     await userDetails.save();
 
-    // WhatsApp message bhejna
+    // Fetch trip & timing
+    const trip = await TripQuote.findById(tripId).lean();
+    const timing = await tripTiming.findOne({ tripId }).lean();
+
+    // Safety check: trip & timing exist
+    if (!trip || !timing) {
+      return res.status(400).send("Trip data not found. Please check tripId.");
+    }
+
+    // Assign variables from models
+    const pickup = trip.pickupLocation;
+    const destination = trip.destinationLocation;
+    const date = timing.departureDate;
+    const time = timing.departureTime;
+    const returnDate = timing.returnDate;
+    const returnTime = timing.returnTime;
+    const userName = fullName;
+    const userPhone = phoneNumber;
+
+    // WhatsApp message
+    const messageBody = `📢 New Quote Request Received!
+Pickup: ${pickup} ➡ Destination: ${destination}
+Date & Time: ${date} ${time}
+Return Date & Time: ${returnDate} ${returnTime}
+User: ${userName} (${userPhone})
+Check full details here: https://sigh-up-with-coach-hire-quick-quote.onrender.com`;
+
+    // Send WhatsApp notification
     try {
       await client.messages.create({
-body: 
-`*Hello ${fullName}!* 👋
-
-Your booking request has been received successfully. Here are your booking details:
-
-*Trip ID:* \`${tripId}\`
-*Status:* _Pending Confirmation_
-
-Please reply with *CONFIRM* to finalize your booking.
-https://sigh-up-with-coach-hire-quick-quote.onrender.com
-Thank you for choosing us! 🙏
-`,
         from: 'whatsapp:+14155238886',
-        to: `whatsapp:+91${phoneNumber}`
-         // country code ke hisaab se adjust karo
+        to: `whatsapp:+916269115002`,    // Admin WhatsApp number
+        body: messageBody
       });
-      
-      console.log("WhatsApp confirmation message sent.");
-    } catch(err) {
+      console.log("WhatsApp message sent to admin.");
+    } catch (err) {
       console.error("Failed to send WhatsApp message:", err);
     }
 
-    // Fetch related trip data
-    const trip = await TripQuote.findById(tripId).lean();
-    const goingStops = await Stop.find({ tripId, stopType: 'going' }).lean();
-    const returnStops = await Stop.find({ tripId, stopType: 'return' }).lean();
-    const timing = await tripTiming.findOne({ tripId }).lean();
-    const user = await UserDetails.findOne({ tripId }).lean();
-    const {tripType } = req.body;
-    // Pass all data to the reviewPage template
-    res.render("reviewpage", {  tripType, trip, goingStops, returnStops, timing, user });
-    
+    // Fetch stops if needed
+    const goingStops = await Stop.find({ tripId, stopType: "going" }).lean();
+    const returnStops = await Stop.find({ tripId, stopType: "return" }).lean();
+
+    // Render review page
+    res.render("reviewpage", { tripType, trip, goingStops, returnStops, timing, user: userDetails });
 
   } catch (err) {
-    console.error("Error saving user details or fetching data:", err);
+    console.error("Error in sendQuoteRequest route:", err);
     res.status(500).send("Something went wrong");
   }
 });
-
 
 
 const PORT = process.env.PORT || 8080;
